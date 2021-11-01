@@ -1,45 +1,31 @@
 package main
 
 import (
-  "fmt"
-  "net/http"
-  "html/template"
+	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
-type Graph struct {
-  X_axis_name string
-  Y_axis_name string
-  Legend string
-  X_points []int
-  Y_points []int
+type Data struct {
+	Array1 []int  `json:"array1"`
+	Array2 []int  `json:"array2"`
 }
 
-func (g *Graph) getPoints() ([]int, []int) {
-  return g.X_points, g.Y_points
-}
-
-func home_page(w http.ResponseWriter, r *http.Request) {
-
-  needed_graph := Graph{
-    X_axis_name: "X", Y_axis_name: "Y", Legend: "This is the legend of the graph",
-    X_points: []int{1, 2, 3 ,4 ,5},
-    Y_points: []int{1, 2, 3 ,4 ,5},
+func calculate(c *gin.Context) {
+  var data Data
+  if err := c.BindJSON(&data); err != nil {
+    c.AbortWithError(400, err)
+    return
   }
 
-  tmpl, _ := template.ParseFiles("templates/home_page.html")
-  tmpl.Execute(w, needed_graph)
-}
-
-func contacts_page(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintf(w, "This is contacts page!")
-}
-
-func handleRequest() {
-  http.HandleFunc("/", home_page)
-  http.HandleFunc("/contacts/", contacts_page)
-  http.ListenAndServe(":5566", nil)
+  var result []int
+  for i := 0; i < len(data.Array1); i++ {
+    result = append(result, data.Array1[i] * data.Array2[i])
+  }
+  c.JSON(http.StatusOK, result)
 }
 
 func main() {
-  handleRequest()
+	r := gin.New()
+	r.GET("/model", calculate)
+	r.Run("localhost:5566")
 }
