@@ -25,7 +25,7 @@ func calculate(c *gin.Context) {
 }
 
 func main() {
-	r := gin.New()
-	r.GET("/model", calculate)
-	r.Run("localhost:5566")
+	router := gin.Default()
+	router.GET("/model", calculate)
+	router.Run("localhost:5566")
 }
