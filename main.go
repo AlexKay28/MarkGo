@@ -1,31 +1,16 @@
 package main
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"github.com/AlexKay28/golang_web_ml/endpoints"
+	"github.com/AlexKay28/golang_web_ml/models"
 )
 
-type Data struct {
-	Array1 []int  `json:"array1"`
-	Array2 []int  `json:"array2"`
-}
-
-func calculate(c *gin.Context) {
-  var data Data
-  if err := c.BindJSON(&data); err != nil {
-    c.AbortWithError(400, err)
-    return
-  }
-
-  var result []int
-  for i := 0; i < len(data.Array1); i++ {
-    result = append(result, data.Array1[i] * data.Array2[i])
-  }
-  c.JSON(http.StatusOK, result)
-}
-
 func main() {
+	models.BuildModel()
+
 	router := gin.Default()
-	router.GET("/model", calculate)
+	router.GET("/model", endpoints.CalculateModel)
+	router.GET("/home", endpoints.PrintMessage)
 	router.Run("localhost:5566")
 }
