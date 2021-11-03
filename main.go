@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/AlexKay28/golang_web_ml/endpoints"
-	"github.com/AlexKay28/golang_web_ml/models"
+	"github.com/AlexKay28/MarkGo/endpoints"
+	"github.com/AlexKay28/MarkGo/models"
 )
 
 func main() {

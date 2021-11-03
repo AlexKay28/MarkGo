@@ -1,4 +1,4 @@
-module github.com/AlexKay28/golang_web_ml
+module github.com/AlexKay28/MarkGo
 
 go 1.16
 
