@@ -1,9 +1,12 @@
-package main
+package utils
 
 import (
-  "fmt"
+  "net/http"
   "strconv"
+	"github.com/gin-gonic/gin"
 )
+
+const TEMP_FILE = "tmp/tmp_data.csv"
 
 type EventsList struct {
   previous_point []int
@@ -57,13 +60,17 @@ func (el *EventsList) BuildTransitionMatrix() ([][]float32, [][]float32) {
   return transition_matrix_success, transition_matrix_fail
 }
 
-func OptrainEventsFromCsv() {
+func OptrainEventsFromCsv(c *gin.Context) {
     var previous_point []int
     var next_point []int
     var transition_status []int
 
+    // write file
+    file, _ := c.FormFile("file")
+    c.SaveUploadedFile(file, TEMP_FILE)
+
     // read data
-    records := ReadCsvFile("../datasets/events.csv")
+    records := ReadCsvFile(TEMP_FILE)
 
     // group data
     for index, values := range records {
@@ -85,5 +92,14 @@ func OptrainEventsFromCsv() {
       next_point: next_point,
       transition_status: transition_status,
     }
-    return events.BuildTransitionMatrix()
+
+    // build matricies
+    succMat, failMat := events.BuildTransitionMatrix()
+
+    // return answer
+    answer := map[string][][]float32{
+      "success_matrix" : succMat,
+      "fail_matrix": failMat,
+    }
+    c.JSON(http.StatusOK, answer)
 }
